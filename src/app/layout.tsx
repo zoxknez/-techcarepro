@@ -1,6 +1,13 @@
-import type { Metadata } from "next"
+import type { Metadata, Viewport } from "next"
 import "./globals.css"
 import { Header, Footer } from "@/components/layout"
+
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 5,
+  themeColor: "#3b82f6",
+}
 
 export const metadata: Metadata = {
   title: {
@@ -19,6 +26,16 @@ export const metadata: Metadata = {
     "copier repair",
     "fax machine repair",
   ],
+  manifest: "/manifest.json",
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "default",
+    title: "TechCare Pro",
+  },
+  formatDetection: {
+    telephone: true,
+    email: true,
+  },
 }
 
 export default function RootLayout({

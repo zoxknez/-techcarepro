@@ -67,38 +67,38 @@ export default function BookingPage() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-primary-50 via-white to-accent-50">
-      <div className="container mx-auto px-4 py-12">
+      <div className="container mx-auto px-4 py-8 sm:py-12">
         <div className="max-w-4xl mx-auto">
           {/* Header */}
-          <div className="text-center mb-12">
-            <Badge className="mb-4">Online Booking</Badge>
-            <h1 className="text-3xl md:text-4xl font-bold mb-4">
+          <div className="text-center mb-8 sm:mb-12">
+            <Badge className="mb-3 sm:mb-4">Online Booking</Badge>
+            <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-3 sm:mb-4">
               Book Your <span className="text-gradient">Repair</span>
             </h1>
-            <p className="text-muted-foreground">
+            <p className="text-sm sm:text-base text-muted-foreground">
               Schedule your device repair in just a few steps
             </p>
           </div>
 
           {/* Progress Steps */}
-          <div className="flex justify-between mb-12 relative">
-            <div className="absolute top-5 left-0 right-0 h-0.5 bg-border" />
+          <div className="flex justify-between mb-8 sm:mb-12 relative px-2">
+            <div className="absolute top-4 sm:top-5 left-0 right-0 h-0.5 bg-border" />
             <div 
-              className="absolute top-5 left-0 h-0.5 bg-primary-500 transition-all duration-500"
+              className="absolute top-4 sm:top-5 left-0 h-0.5 bg-primary-500 transition-all duration-500"
               style={{ width: `${((currentStep - 1) / 3) * 100}%` }}
             />
             {steps.map((step) => (
               <div key={step.id} className="relative z-10 flex flex-col items-center">
                 <div className={cn(
-                  "w-10 h-10 rounded-full flex items-center justify-center transition-all",
+                  "w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center transition-all",
                   currentStep >= step.id 
                     ? "bg-primary-500 text-white" 
                     : "bg-white border-2 border-border text-muted-foreground"
                 )}>
-                  <step.icon className="w-5 h-5" />
+                  <step.icon className="w-4 h-4 sm:w-5 sm:h-5" />
                 </div>
                 <span className={cn(
-                  "mt-2 text-sm font-medium",
+                  "mt-1 sm:mt-2 text-xs sm:text-sm font-medium hidden sm:block",
                   currentStep >= step.id ? "text-primary-600" : "text-muted-foreground"
                 )}>
                   {step.title}
@@ -108,8 +108,8 @@ export default function BookingPage() {
           </div>
 
           {/* Step Content */}
-          <Card className="mb-8">
-            <CardContent className="p-8">
+          <Card className="mb-6 sm:mb-8">
+            <CardContent className="p-4 sm:p-8">
               <AnimatePresence mode="wait">
                 {/* Step 1: Select Service */}
                 {currentStep === 1 && (

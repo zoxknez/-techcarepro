@@ -90,12 +90,29 @@ export default function ShopPage() {
         </div>
       </section>
 
-      <div className="container mx-auto px-4 py-8">
-        <div className="flex flex-col lg:flex-row gap-8">
-          {/* Sidebar */}
-          <aside className="lg:w-64 space-y-6">
-            {/* Categories */}
-            <Card>
+      <div className="container mx-auto px-4 py-6 sm:py-8">
+        <div className="flex flex-col lg:flex-row gap-6 lg:gap-8">
+          {/* Sidebar - Hidden on mobile, shown as horizontal scroll */}
+          <aside className="lg:w-64 space-y-4 lg:space-y-6">
+            {/* Mobile Category Scroll */}
+            <div className="lg:hidden overflow-x-auto pb-2 -mx-4 px-4">
+              <div className="flex gap-2 min-w-max">
+                {categories.map((cat) => (
+                  <button
+                    key={cat.id}
+                    className="flex items-center gap-2 px-4 py-2 rounded-full border bg-white hover:bg-primary-50 hover:border-primary-300 transition-colors whitespace-nowrap text-sm"
+                  >
+                    <span>{cat.name}</span>
+                    <span className="text-xs text-muted-foreground bg-secondary px-2 py-0.5 rounded-full">
+                      {cat.count}
+                    </span>
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Desktop Categories */}
+            <Card className="hidden lg:block">
               <CardContent className="p-4">
                 <h3 className="font-semibold mb-4">Categories</h3>
                 <div className="space-y-2">
@@ -114,8 +131,8 @@ export default function ShopPage() {
               </CardContent>
             </Card>
 
-            {/* Brands */}
-            <Card>
+            {/* Desktop Brands */}
+            <Card className="hidden lg:block">
               <CardContent className="p-4">
                 <h3 className="font-semibold mb-4">Brands</h3>
                 <div className="space-y-2">
@@ -132,11 +149,11 @@ export default function ShopPage() {
 
           {/* Products Grid */}
           <div className="flex-1">
-            <div className="flex justify-between items-center mb-6">
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-4 sm:mb-6">
               <p className="text-sm text-muted-foreground">
                 Showing <strong>{products.length}</strong> products
               </p>
-              <select className="text-sm border rounded-lg px-3 py-2">
+              <select className="text-sm border rounded-lg px-3 py-2 w-full sm:w-auto">
                 <option>Sort by: Featured</option>
                 <option>Price: Low to High</option>
                 <option>Price: High to Low</option>
@@ -144,7 +161,7 @@ export default function ShopPage() {
               </select>
             </div>
 
-            <div className="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+            <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-4">
               {products.map((product) => (
                 <Link key={product.id} href={`/shop/${product.slug}`}>
                   <Card className="group h-full overflow-hidden hover:border-primary-300">
@@ -165,22 +182,23 @@ export default function ShopPage() {
                         </Badge>
                       )}
                     </div>
-                    <CardContent className="p-4">
+                    <CardContent className="p-3 sm:p-4">
                       <p className="text-xs text-muted-foreground mb-1">{product.brand}</p>
-                      <h3 className="font-medium text-sm mb-2 group-hover:text-primary-600 transition-colors line-clamp-2">
+                      <h3 className="font-medium text-xs sm:text-sm mb-2 group-hover:text-primary-600 transition-colors line-clamp-2">
                         {product.name}
                       </h3>
-                      <div className="flex items-center gap-2">
-                        <span className="font-bold text-primary-600">{formatPrice(product.price)}</span>
+                      <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-2">
+                        <span className="font-bold text-sm sm:text-base text-primary-600">{formatPrice(product.price)}</span>
                         {product.compareAtPrice && (
                           <span className="text-xs text-muted-foreground line-through">
                             {formatPrice(product.compareAtPrice)}
                           </span>
                         )}
                       </div>
-                      <Button size="sm" className="w-full mt-3">
-                        <ShoppingCart className="w-4 h-4 mr-2" />
-                        Add to Cart
+                      <Button size="sm" className="w-full mt-2 sm:mt-3 text-xs sm:text-sm">
+                        <ShoppingCart className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
+                        <span className="hidden sm:inline">Add to Cart</span>
+                        <span className="sm:hidden">Add</span>
                       </Button>
                     </CardContent>
                   </Card>

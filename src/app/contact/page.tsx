@@ -16,10 +16,43 @@ import { BRAND } from "@/lib/constants"
 
 export default function ContactPage() {
   const [submitted, setSubmitted] = useState(false)
+  const [isLoading, setIsLoading] = useState(false)
+  const [formData, setFormData] = useState({
+    firstName: "",
+    lastName: "",
+    email: "",
+    phone: "",
+    subject: "",
+    message: "",
+  })
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    setFormData((prev) => ({ ...prev, [e.target.id]: e.target.value }))
+  }
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    setSubmitted(true)
+    setIsLoading(true)
+    
+    try {
+      const response = await fetch('/api/contact', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(formData),
+      })
+      
+      if (response.ok) {
+        setSubmitted(true)
+        setFormData({ firstName: "", lastName: "", email: "", phone: "", subject: "", message: "" })
+      } else {
+        alert('Failed to send message. Please try again.')
+      }
+    } catch (error) {
+      console.error('Contact form error:', error)
+      alert('Something went wrong. Please try again.')
+    } finally {
+      setIsLoading(false)
+    }
   }
 
   return (
@@ -151,28 +184,28 @@ export default function ContactPage() {
                         <div className="grid sm:grid-cols-2 gap-4">
                           <div>
                             <Label htmlFor="firstName">First name</Label>
-                            <Input id="firstName" placeholder="John" required />
+                            <Input id="firstName" placeholder="John" required value={formData.firstName} onChange={handleChange} />
                           </div>
                           <div>
                             <Label htmlFor="lastName">Last name</Label>
-                            <Input id="lastName" placeholder="Smith" required />
+                            <Input id="lastName" placeholder="Smith" required value={formData.lastName} onChange={handleChange} />
                           </div>
                         </div>
 
                         <div className="grid sm:grid-cols-2 gap-4">
                           <div>
                             <Label htmlFor="email">Email</Label>
-                            <Input id="email" type="email" placeholder="john@example.com" required />
+                            <Input id="email" type="email" placeholder="john@example.com" required value={formData.email} onChange={handleChange} />
                           </div>
                           <div>
                             <Label htmlFor="phone">Phone (optional)</Label>
-                            <Input id="phone" type="tel" placeholder="021 123 4567" />
+                            <Input id="phone" type="tel" placeholder="021 123 4567" value={formData.phone} onChange={handleChange} />
                           </div>
                         </div>
 
                         <div>
                           <Label htmlFor="subject">Subject</Label>
-                          <Input id="subject" placeholder="How can we help?" required />
+                          <Input id="subject" placeholder="How can we help?" required value={formData.subject} onChange={handleChange} />
                         </div>
 
                         <div>
@@ -181,13 +214,15 @@ export default function ContactPage() {
                             id="message" 
                             placeholder="Tell us more about your inquiry..." 
                             className="min-h-[150px]"
-                            required 
+                            required
+                            value={formData.message}
+                            onChange={handleChange}
                           />
                         </div>
 
-                        <Button type="submit" size="lg" className="w-full sm:w-auto">
+                        <Button type="submit" size="lg" className="w-full sm:w-auto" disabled={isLoading}>
                           <Send className="w-4 h-4 mr-2" />
-                          Send Message
+                          {isLoading ? 'Sending...' : 'Send Message'}
                         </Button>
                       </form>
                     </>

@@ -1,6 +1,7 @@
 "use client"
 
 import { useState } from "react"
+import Link from "next/link"
 import { motion, AnimatePresence } from "framer-motion"
 import { 
   ArrowLeft, ArrowRight, Upload, Calendar, MapPin, 
@@ -34,6 +35,8 @@ const timeSlots = [
 
 export default function BookingPage() {
   const [currentStep, setCurrentStep] = useState(1)
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  const [trackingCode, setTrackingCode] = useState<string | null>(null)
   const [formData, setFormData] = useState({
     service: "",
     deviceType: "",
@@ -60,9 +63,37 @@ export default function BookingPage() {
     if (currentStep > 1) setCurrentStep(currentStep - 1)
   }
 
-  const handleSubmit = () => {
-    console.log("Booking submitted:", formData)
-    alert("Booking submitted! We'll contact you shortly.")
+  const handleSubmit = async () => {
+    setIsSubmitting(true)
+    try {
+      const response = await fetch('/api/bookings', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          service: formData.service,
+          deviceBrand: formData.brand,
+          deviceModel: formData.model,
+          issueDescription: formData.issue,
+          serviceType: formData.serviceType.toUpperCase(),
+          preferredDate: formData.date,
+          preferredTime: formData.time,
+          customerName: formData.name,
+          customerEmail: formData.email,
+          customerPhone: formData.phone,
+          customerAddress: formData.address,
+        }),
+      })
+      const data = await response.json()
+      if (data.trackingCode) {
+        setTrackingCode(data.trackingCode)
+        setCurrentStep(5) // Success step
+      }
+    } catch (error) {
+      console.error('Booking error:', error)
+      alert('Something went wrong. Please try again.')
+    } finally {
+      setIsSubmitting(false)
+    }
   }
 
   return (
@@ -403,14 +434,45 @@ export default function BookingPage() {
                 Continue
                 <ArrowRight className="w-4 h-4 ml-2" />
               </Button>
-            ) : (
-              <Button onClick={handleSubmit}>
-                Confirm Booking
+            ) : currentStep === 4 ? (
+              <Button onClick={handleSubmit} disabled={isSubmitting}>
+                {isSubmitting ? 'Submitting...' : 'Confirm Booking'}
                 <CheckCircle2 className="w-4 h-4 ml-2" />
               </Button>
-            )}
+            ) : null}
           </div>
         </div>
+
+        {/* Success Step */}
+        {currentStep === 5 && trackingCode && (
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            className="max-w-lg mx-auto text-center py-12"
+          >
+            <div className="w-20 h-20 mx-auto mb-6 rounded-full bg-green-100 flex items-center justify-center">
+              <CheckCircle2 className="w-10 h-10 text-green-600" />
+            </div>
+            <h2 className="text-2xl font-bold mb-4">Booking Confirmed!</h2>
+            <p className="text-muted-foreground mb-6">
+              Your tracking code is:
+            </p>
+            <div className="bg-primary-50 rounded-xl p-4 mb-6">
+              <p className="text-2xl font-mono font-bold text-primary-600">{trackingCode}</p>
+            </div>
+            <p className="text-sm text-muted-foreground mb-8">
+              We&apos;ve sent a confirmation email with all the details. Use your tracking code to check the status of your repair.
+            </p>
+            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+              <Button asChild>
+                <Link href={`/track?code=${trackingCode}`}>Track Repair</Link>
+              </Button>
+              <Button variant="outline" asChild>
+                <Link href="/">Back to Home</Link>
+              </Button>
+            </div>
+          </motion.div>
+        )}
       </div>
     </div>
   )
